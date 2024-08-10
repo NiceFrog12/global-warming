@@ -23,7 +23,7 @@
     {% block content %}
     <h1 class="main__title">Мои записи</h1>
     <ul class="cards-list">
-      {% for el in cards%}
+      {% for el in facts%}
       <li class="card">
         <a class="card__link" href="/card/{{el.id}}">
           <img class="card__img" src="../static/img/post_icon.png" width="250" height="250" alt="post_icon">
@@ -34,9 +34,6 @@
         </a>
       </li>
       {% endfor %}
-      <li class="card card--creat">
-          <a class="creat__link" href="{{url_for('create')}}"></a>
-      </li>
     </ul>
     {% endblock %}
   </main>
