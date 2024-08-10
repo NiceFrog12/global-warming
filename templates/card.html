@@ -22,26 +22,13 @@
   </header>
   <main class="main">
     {% block content %}
-    <h1 class="main__title">{{card.title}}</h1>
+    <h1 class="main__title">{{fact.title}}</h1>
     <div class="main__block">
-      <h2 class="main__subtitle">{{card.subtitle}}</h2>
+      <h2 class="main__subtitle">{{fact.subtitle}}</h2>
       <div class="main__text">
-      {{card.text}}
+      {{fact.text}}
       </div>
       <a class="main__link" href="/index">Вернуться к записям</a>
-    </div>
-    {% if card.author == user %}
-    <div class="button-container">
-    <form method="post" class="creat-formbot" action="/delete/{{card.id}}">
-    <button type="submit" class="form__button">DELETE</button>
-    </form>
-      <form method="post" class="creat-formbot" action="/edit/{{card.id}}">
-        <button type="submit" class="form__button">EDIT</button>
-      </form>
-    </div>
-    {% endif %}
-    <div class="autor">
-     Card by {{author}}
     </div>
   </main>
   {% endblock %}
