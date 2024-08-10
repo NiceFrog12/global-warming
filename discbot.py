@@ -37,15 +37,6 @@ async def on_ready():
     send_message_periodically.start()
 
 
-#stuff below will probably be brand new, i believe in you, future me....
-
-
-#empty command template:
-#@bot.slash_command(
-#    name="",
-#    description="",
-#    guild_ids=GUILD_IDS
-#)
 
 
 #this is for choosing a random one later.
