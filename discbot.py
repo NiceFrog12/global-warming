@@ -1,14 +1,12 @@
 #disord imports for the bot
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 from dctoken import token #this is just my discord bot token
 
 
 
 #database managing imports
 from main import app,Facts, create_app, get_db
-from flask_sqlalchemy import SQLAlchemy
-from flask import Flask,request
 
 #miscellaneous imports
 import random
@@ -36,6 +34,7 @@ GUILD_IDS = [1195734655106818069]
 @bot.event
 async def on_ready():
     print(f'I am in! My codename is: "{bot.user}"')
+    send_message_periodically.start()
 
 
 #stuff below will probably be brand new, i believe in you, future me....
@@ -48,6 +47,8 @@ async def on_ready():
 #    guild_ids=GUILD_IDS
 #)
 
+
+#this is for choosing a random one later.
 facts = [
 "The Earth's average surface temperature has risen about 1.18°C (2.12°F) since the late 19th century.",
 "The primary cause of global warming is the increase in greenhouse gases like carbon dioxide (CO2), methane (CH4), and nitrous oxide (N2O).",
@@ -76,13 +77,21 @@ facts = [
 "Raising public awareness and understanding of global warming is essential for driving collective action to address the crisis."]
 
 
+@tasks.loop(seconds=60)
+async def send_message_periodically():
+    channel = bot.get_channel(1195734655702405202)
+    if channel:
+        await channel.send(f"Here's a random fact about global warming: {random.choice(facts)}")
+
+
+
 @bot.slash_command(
     name="gwranfact",
     description="Gives a random global warming fact!",
     guild_ids=GUILD_IDS
 )
 async def gwrandomfact(ctx,
-                       amount_of_facts: int):
+                    amount_of_facts: int):
     if amount_of_facts <= 10:
         for _ in range(amount_of_facts):
             await ctx.respond(random.choice(facts))
@@ -96,11 +105,12 @@ async def gwrandomfact(ctx,
 )
 async def writeyourfact(ctx, author: str, title: str, text: str):
     with app.app_context():
+        
         fact = Facts(title=title, text=text, author=author)
         db.session.add(fact)
         db.session.commit()
         
-        await ctx.send("Your fact has been saved to the database!")
+        await ctx.respond("Your fact has been saved to the database!")
 
 
 @bot.slash_command(
@@ -110,14 +120,39 @@ async def writeyourfact(ctx, author: str, title: str, text: str):
 )
 async def randomuserfact(ctx, amount: int):
     for _ in range(amount):
+        
         fact = random_fact_choice()
 
         if fact is not None:
             author = fact.author
             title = fact.title
             text = fact.text
-            await ctx.send(f"This fact is made by '{author}'\nHis topic is '{title}', and he wants to say the following: {text}")
+            await ctx.respond(f"This fact is made by '{author}'\nHis topic is '{title}', and he wants to say the following: {text}")
         else:
-            await ctx.send("No facts found.")
+            await ctx.respond("No facts found.")
+
+
+
+#just a help command
+@bot.slash_command(
+        name="help",
+        description="Provides the list of all commands for this bot!",
+        guild_ids=GUILD_IDS
+)
+async def help_command(ctx: discord.ApplicationContext):
+    embed = discord.Embed(title="Help", description="List of all commands", color=discord.Color.blue())
+    commands_list = [
+        {"name": "/gwranfact [amount 1-10]", "description": "Gives a random global warming fact!"},
+        {"name": "/writeyourfact [author] [title] [text]", "description": "write your own fact/thoughts about global warming and save it to the database!"},
+        {"name": "/randomuserfact [amount 1-10]", "description": "it shows a random fact from the database of human-written facts about the global warming!"}
+    ]
+
+    for command in commands_list:
+        embed.add_field(name=command["name"], value=command["description"], inline=False)
+
+    embed.set_footer(text="You can also see user-written facts about global warming on our website!")
+    await ctx.respond(embed=embed)
+
+
 
 bot.run(token)
