@@ -1,11 +1,3 @@
-################
-#
-# THIS SHALL BE THE START OF MY BEST WORK!!!
-#
-# THE WORLD IS NOT READY FOR WHAT I HAVE PLANNED!!!
-#
-################
-
 
 from flask import Flask, render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
