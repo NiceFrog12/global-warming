@@ -8,19 +8,15 @@ engine = create_engine('sqlite:///instance/facts.db')
 #allowing pandas read through the database
 
 
-def random_fact_choice():
+def random_fact_choice(language):
     with app.app_context():
-        # Get min and max ID from the database
-        min_id = db.session.query(func.min(Facts.id)).scalar()
-        max_id = db.session.query(func.max(Facts.id)).scalar()
+        min_id = db.session.query(func.min(Facts.id)).filter(Facts.language == language).scalar()
+        max_id = db.session.query(func.max(Facts.id)).filter(Facts.language == language).scalar()
 
         if min_id is None or max_id is None:
-            return None  # Return None if no rows are found
+            return None
 
-        # Generate a random ID
         random_id = random.randint(min_id, max_id)
-
-        # Get the fact with the random ID
-        fact = db.session.query(Facts).filter(Facts.id == random_id).first()
+        fact = db.session.query(Facts).filter(Facts.id == random_id, Facts.language == language).first()
 
         return fact
