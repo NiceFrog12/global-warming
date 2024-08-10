@@ -23,9 +23,6 @@ app = create_app()
 db = get_db()
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///diary.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config["SECRET_KEY"] = "akdqwenqknlnlcashodonasdlkaksd"
 
 
 GUILD_IDS = [1195734655106818069]
@@ -37,6 +34,15 @@ async def on_ready():
     send_message_periodically.start()
 
 
+#stuff below will probably be brand new, i believe in you, future me....
+
+
+#empty command template:
+#@bot.slash_command(
+#    name="",
+#    description="",
+#    guild_ids=GUILD_IDS
+#)
 
 
 #this is for choosing a random one later.
@@ -68,6 +74,33 @@ facts = [
 "Raising public awareness and understanding of global warming is essential for driving collective action to address the crisis."]
 
 
+facts_ru = [
+"Средняя температура поверхности Земли поднялась примерно на 1.18°C (2.12°F) с конца XIX века.",
+"Основной причиной глобального потепления является увеличение выбросов парниковых газов, таких как углекислый газ (CO2), метан (CH4) и закись азота (N2O).",
+"Человеческая деятельность, особенно сжигание ископаемого топлива и вырубка лесов, является крупнейшим источником выбросов парниковых газов.",
+"Ледяной покров Арктики сокращается со скоростью 12,6% за десятилетие.",
+"Уровень мирового океана поднялся примерно на 20 см (8 дюймов) за последний век, причем скорость подъема почти удвоилась за последние два десятилетия.",
+"Глобальное потепление связано с более экстремальными погодными явлениями, включая более сильные ураганы, более интенсивные тепловые волны и более обильные дожди.",
+"Верхние 700 метров (около 2300 футов) океана прогрелись более чем на 0.2°C (0.36°F) с 1960-х годов.",
+"Океаны поглотили около 30% антропогенного CO2, что вызывает окисление океанов, влияющее на морскую жизнь, особенно на коралловые рифы.",
+"Ледники по всему миру отступают, включая ледники в Альпах, Гималаях, Андах, Скалистых горах, Аляске и Африке.",
+"Таяние вечной мерзлоты высвобождает метан, мощный парниковый газ, усугубляющий глобальное потепление.",
+"Изменение климата представляет значительную угрозу для биоразнообразия, и многие виды сталкиваются с повышенным риском вымирания из-за изменения их среды обитания.",
+"Глобальное потепление влияет на сельское хозяйство, изменяя характер осадков, повышая температуры и вызывая более частые экстремальные погодные явления, что снижает урожайность.",
+"Изменение климата несет угрозы здоровью, включая тепловые удары, болезни, переносимые насекомыми (например, малярия), и респираторные проблемы из-за увеличения загрязнения воздуха.",
+"Изменения в количестве осадков и таяние ледников влияют на водные ресурсы, что приводит к нехватке воды во многих регионах.",
+"Экономические затраты на изменение климата значительны и влияют на инфраструктуру, здравоохранение, сельское хозяйство и общую экономическую продуктивность.",
+"Переход на возобновляемые источники энергии, такие как солнечная, ветровая и гидроэлектрическая энергия, жизненно важен для смягчения глобального потепления.",
+"Парижское соглашение направлено на ограничение глобального потепления до уровня значительно ниже 2°C, желательно до 1.5°C, по сравнению с доиндустриальным уровнем.",
+"Сокращение индивидуального и коллективного углеродного следа через изменения в образе жизни и устойчивые практики может помочь смягчить глобальное потепление.",
+"Повышение уровня моря и экстремальные погодные явления приводят к увеличению перемещения и миграции людей.",
+"Частота и интенсивность тепловых волн увеличиваются из-за глобального потепления, что создает серьезные риски для здоровья.",
+"Глобальное потепление способствует более частым и интенсивным лесным пожарам, создавая более сухие и жаркие условия.",
+"Повышение температуры океанов вызывает обесцвечивание кораллов, угрожая коралловым рифовым экосистемам по всему миру.",
+"Таяние морского льда уменьшает среду обитания для белых медведей, что ставит их под угрозу голодания и сокращения численности.",
+"Положительные обратные связи, такие как эффект альбедо, усиливают глобальное потепление, снижая способность Земли отражать солнечный свет.",
+"Повышение осведомленности общественности и понимания глобального потепления является важным для стимулирования коллективных действий по решению этой проблемы."]
+
 @tasks.loop(seconds=60)
 async def send_message_periodically():
     channel = bot.get_channel(1195734655702405202)
@@ -81,9 +114,13 @@ async def send_message_periodically():
     description="Gives a random global warming fact!",
     guild_ids=GUILD_IDS
 )
-async def gwrandomfact(ctx,
-                    amount_of_facts: int):
+async def gwrandomfact(ctx, amount_of_facts: int, language: discord.Option(str, "Choose language", choices=["en", "ru"])):
     if amount_of_facts <= 10:
+        if language == "eng":
+            facts = facts
+        elif language == "ru":
+            facts = facts_ru
+
         for _ in range(amount_of_facts):
             await ctx.respond(random.choice(facts))
     else:
@@ -94,10 +131,10 @@ async def gwrandomfact(ctx,
     description="write your own fact/thoughts about global warming and save it to the database!",
     guild_ids=GUILD_IDS
 )
-async def writeyourfact(ctx, author: str, title: str, text: str):
+async def writeyourfact(ctx, author: str, title: str, text: str, language: discord.Option(str, "Choose language", choices=["en", "ru"])):
     with app.app_context():
         
-        fact = Facts(title=title, text=text, author=author)
+        fact = Facts(title=title, text=text, author=author, language=language)
         db.session.add(fact)
         db.session.commit()
         
@@ -106,21 +143,27 @@ async def writeyourfact(ctx, author: str, title: str, text: str):
 
 @bot.slash_command(
     name="randomuserfact",
-    description="it shows a random fact from the database of human-written facts about the global warming!",
+    description="Shows a random fact from the database of human-written facts about global warming!",
     guild_ids=GUILD_IDS
 )
-async def randomuserfact(ctx, amount: int):
+async def randomuserfact(ctx, amount: int, language: discord.Option(str, "Choose language", choices=["en", "ru"])):
+    if amount < 1 or amount > 10:
+        await ctx.respond("You can only request between 1 and 10 facts at a time!")
+        return
+
     for _ in range(amount):
-        
-        fact = random_fact_choice()
+        fact = random_fact_choice(language)
 
         if fact is not None:
             author = fact.author
             title = fact.title
             text = fact.text
-            await ctx.respond(f"This fact is made by '{author}'\nHis topic is '{title}', and he wants to say the following: {text}")
+            if language == "en":
+                await ctx.respond(f"This fact is made by '{author}'\nHis topic is '{title}', and he wants to say the following: {text}")
+            elif language == "ru":
+                await ctx.respond(f"Факт был написан '{author}'\n Его тема это '{title}', и его мысли которые он хочет передать это: {text}")
         else:
-            await ctx.respond("No facts found.")
+            await ctx.respond("No facts found for the specified language.")
 
 
 
@@ -130,18 +173,29 @@ async def randomuserfact(ctx, amount: int):
         description="Provides the list of all commands for this bot!",
         guild_ids=GUILD_IDS
 )
-async def help_command(ctx: discord.ApplicationContext):
+async def help_command(ctx: discord.ApplicationContext, language: discord.Option(str, "Choose language", choices=["en", "ru"])):
     embed = discord.Embed(title="Help", description="List of all commands", color=discord.Color.blue())
-    commands_list = [
-        {"name": "/gwranfact [amount 1-10]", "description": "Gives a random global warming fact!"},
+    commands_list_en = [
+        {"name": "/gwranfact [amount 1-10], [language(ru/eng)]", "description": "Gives a random global warming fact!"},
         {"name": "/writeyourfact [author] [title] [text]", "description": "write your own fact/thoughts about global warming and save it to the database!"},
         {"name": "/randomuserfact [amount 1-10]", "description": "it shows a random fact from the database of human-written facts about the global warming!"}
     ]
+    commands_list_ru = [
+    {"name": "/gwranfact [количество 1-10], [язык(ru/eng)]", "description": "Выдает случайный факт о глобальном потеплении!"},
+    {"name": "/writeyourfact [автор] [заголовок] [текст]", "description": "Напишите свой собственный факт/мысли о глобальном потеплении и сохраните их в базе данных!"},
+    {"name": "/randomuserfact [количество 1-10]", "description": "Показывает случайный факт из базы данных о человеческих фактах о глобальном потеплении!"}
+    ]
 
-    for command in commands_list:
-        embed.add_field(name=command["name"], value=command["description"], inline=False)
+    if language == "en":
+        for command in commands_list_en:
+            embed.add_field(name=command["name"], value=command["description"], inline=False)
+            embed.set_footer(text="You can also see user-written facts about global warming on our website!")
+    elif language == "ru":
+        for command in commands_list_ru:
+            embed.add_field(name=command["name"], value=command["description"], inline=False)
+            embed.set_footer(text="Вы также можете увидеть факты, написанные пользователями, о глобальном потеплении на нашем веб-сайте!")
 
-    embed.set_footer(text="You can also see user-written facts about global warming on our website!")
+    
     await ctx.respond(embed=embed)
 
 
