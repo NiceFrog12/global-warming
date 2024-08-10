@@ -1,22 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
 body::-webkit-scrollbar {
     width: 12px;
-  }
-  
-  body::-webkit-scrollbar-track {
-    background: #0F172A;        /* цвет зоны отслеживания */
-  }
-  
-  body::-webkit-scrollbar-thumb {
-    background-color: rgba(30, 41, 59, 0.4);    /* цвет бегунка */
-    border-radius: 20px;       /* округлось бегунка */
+}
+
+body::-webkit-scrollbar-track {
+    background: #0F172A;
+}
+
+body::-webkit-scrollbar-thumb {
+    background-color: rgba(30, 41, 59, 0.4);
+    border-radius: 20px;
     border: none;
-  }
+}
 
-
-
-
-body {
+body, html {
     margin: 0;
     padding: 0;
     font-family: 'Roboto', sans-serif;
@@ -24,12 +22,13 @@ body {
     line-height: 20px;
     background-color: #0F172A;
     color: #F8FAFC;
+    height: 100%;
+    overflow: hidden;
 }
 
 h1, h2, p {
     margin: 0;
 }
-
 
 img {
     object-fit: contain;
@@ -61,7 +60,45 @@ ul {
     gap: 20px;
 }
 
+/* Split button layout */
+.split {
+    position: fixed;
+    width: 50%;
+    height: 100%;
+    top: 0;
+    transition: width 0.5s ease;
+}
 
+.left {
+    left: 0;
+    background-color: rgba(169, 8, 184, 0.8);
+}
+
+.right {
+    right: 0;
+    background-color: rgba(94, 24, 116, 0.8);
+}
+
+.split:hover {
+    width: 70%;
+}
+
+.split.left:hover ~ .split.right {
+    width: 30%;
+}
+
+.split.right:hover ~ .split.left {
+    width: 30%;
+}
+
+
+
+.button:hover {
+    background-color: rgb(169, 8, 184);
+    color: #0F172A;
+}
+
+/* Original styles */
 .main__title {
     font-size: 40px;
     text-align: center;
@@ -85,7 +122,6 @@ ul {
     background: rgba(30, 41, 59, 0.4);
     border-radius: 20px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-
 }
 
 .card__link {
@@ -110,10 +146,10 @@ ul {
     padding: 0 20px;
     text-align: center;
 }
+
 .card__subtitle {
     padding: 0 20px;
     text-align: center;
-
 }
 
 .card__img {
@@ -141,11 +177,13 @@ ul {
 .card:hover {
     box-shadow: 0px 4px 10px rgb(169, 8, 184);
 }
+
 .button-container {
     display: flex;
     gap: 10px;
     justify-content: center;
 }
+
 .creat-form {
     padding: 0 5%;
     display: flex;
@@ -156,8 +194,8 @@ ul {
 }
 
 .creat-formbot {
-  display: inline-block;
-  margin-right: 10px;
+    display: inline-block;
+    margin-right: 10px;
 }
 
 .form__card {
@@ -195,19 +233,7 @@ ul {
     width: 94%;
 }
 
-.form__card label {
-    width: 80%;
-}
 
-.form__text {
-    background: #0F172A;
-    border-radius: 10px;
-    padding: 10px;
-    color: #F8FAFC;
-    font: inherit;
-    border: none;
-    width: 94%;
-}
 
 .form__button {
     border: 1px solid rgb(169, 8, 184);
@@ -219,39 +245,23 @@ ul {
     cursor: pointer;
     transition: 0.2s;
 }
-.form__button {
-    border: 1px solid rgb(169, 8, 184);
-    background: #0F172A;
-    border-radius: 10px;
-    color: rgb(169, 8, 184);
-    padding: 15px 20px;
-    font: inherit;
-    cursor: pointer;
-    transition: 0.2s;   
-}
+
 .form__buttonentr {
-    border: 1px solid rgb(169, 8, 184);
-    background: #0F172A;
-    border-radius: 10px;
-    color: rgb(169, 8, 184);
-    padding: 15px 20px;
-    font: inherit;
-    cursor: pointer;
-    transition: 0.2s;   
     width: 160px;
 }
+
 .voice__button img {
     border: 1px solid rgb(169, 8, 184);
     background: #0F172A;
     border-radius: 10px;
     color: rgb(169, 8, 184);
     padding: 15px 55px;
-    font: inherit;
     cursor: pointer;
     transition: 0.2s;
-    width: 50px ;
-    height: 50px ;
+    width: 50px;
+    height: 50px;
 }
+
 .form__button:hover {
     color: #F8FAFC;
     background: rgb(169, 8, 184);
@@ -299,9 +309,8 @@ ul {
 
 .main__link:hover {
     color: #F8FAFC;
-    background:  rgb(169, 8, 184);
+    background: rgb(169, 8, 184);
 }
-
 
 .main-login {
     display: flex;
@@ -321,23 +330,53 @@ ul {
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-
 .login label {
     width: 60%;
 }
 
-
 .reg__link {
     height: fit-content;
     text-align: center;
-    padding: 15px 0px;
+    padding: 15
 }
 
-.error {
-    font-size: 10px;
-    color: #fff;
+.button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px 40px;
+    background-color: rgba(30, 41, 59, 0.8);
+    color: #F8FAFC;
+    text-decoration: none;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 10px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center;    /* Center vertically */
 }
 
-.login__link:hover {
-    color: rgb(169, 8, 184);
+.split a.button {
+    display: flex; /* Make sure it uses flexbox */
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
 }
+
+.form__text {
+    background: #0F172A;
+    border-radius: 10px;
+    padding: 10px;
+    color: #F8FAFC;     
+    font: inherit;     
+    border: none;     
+    width: 100%;     
+    resize: none; /* Prevent resizing */     
+    box-sizing: border-box;     
+    padding-right: 450px ; }
