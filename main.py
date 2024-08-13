@@ -1,4 +1,5 @@
 
+
 from flask import Flask, render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 
@@ -14,6 +15,7 @@ class Facts(db.Model):
     author = db.Column(db.String(30), nullable=False)
     title = db.Column(db.String(100), nullable=False)
     text = db.Column(db.Text, nullable=False)
+    language = db.Column(db.String(2), nullable=False)
 
     def __repr__(self):
         return f'<Fact {self.id}>'
@@ -31,25 +33,46 @@ def get_db():
 
 
 @app.route('/')
-def login():
-    return render_template('login.html')
+def language_choosing():
+    return render_template('language.html')
     
-@app.route('/browse')
+@app.route('/login/eng')
+def login():
+    return render_template("login.html") 
+
+@app.route('/login/ru')
+def login_ru():
+    return render_template("login_ru.html")
+
+@app.route('/browse/ru')
 def browsing():
-    facts = Facts.query.order_by(Facts.id).all()
+    facts = Facts.query.filter_by(language='ru').order_by(Facts.id).all()
     return render_template('index.html', facts=facts)
 
+@app.route('/browse/eng')
+def browsing_eng():
+    facts = Facts.query.filter_by(language='eng').order_by(Facts.id).all()
+    return render_template('index_eng.html', facts=facts)
 
 #Запуск страницы c картой
-@app.route('/card/<int:id>')
+@app.route('/card/ru/<int:id>')
 def fact(id):
     fact = Facts.query.get(id)
     return render_template('card.html', fact=fact)
 
+@app.route('/card/eng/<int:id>')
+def fact_eng(id):
+    fact = Facts.query.get(id)
+    return render_template('card_eng.html', fact=fact)
 
-@app.route('/create')
+@app.route('/create/ru')
 def create():
     return render_template('create_card.html')
+
+@app.route('/create/eng')
+def create_eng():
+    return render_template('create_card_eng.html')
+
 
 #Форма карты
 @app.route('/form_create', methods=['GET','POST'])
@@ -58,13 +81,14 @@ def form_create():
         title =  request.form['title']
         subtitle =  request.form['subtitle']
         text =  request.form['text']
+        language = request.form['language']
         #Создание объкта для передачи в дб
 
-        fact = Facts(title=title, subtitle=subtitle, text=text)
+        fact = Facts(title=title, subtitle=subtitle, text=text, language=language)
 
         db.session.add(fact)
         db.session.commit()
-        return redirect('/index')
+        return redirect('/')
     else:
         return render_template('create_card.html')
 
