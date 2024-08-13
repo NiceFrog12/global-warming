@@ -6,6 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Дневник программиста</title>
     <link rel="stylesheet" href="../static/css/style.css">
+    <style>
+        /*Это для кнопки выбора языка*/
+    .form__input {
+        height: 40px; 
+        padding: 5px;
+        font-size: 16px;
+        line-height: 1.5;
+        border-radius: 5px;
+}
+    </style>
 </head>
 <body>
     <header class="header">
@@ -28,18 +38,18 @@
                 </div>
                 <div class="form__inputs">
                     <label for="title">
-                        <input class="form__input" type="text" name="title" id="title" placeholder="Введите заголовок" required>
+                        <input class="form__input" type="text" name="title" id="title" placeholder="Input the title" required>
                     </label>
                     <label for="subtitle">
-                        <input class="form__input" type="text" name="subtitle" id="subtitle" placeholder="Введите подзаголовок" required>
+                        <input class="form__input" type="text" name="subtitle" id="subtitle" placeholder="Input the subtitle" required>
                     </label>
                 </div>
                 <label for="text">
-                    <textarea class="form__text" name="text" id="text" cols="30" rows="10" required placeholder="Напишите что-нибудь...">{{text}}</textarea>
+                    <textarea class="form__text" name="text" id="text" cols="30" rows="10" required placeholder="Write something...">{{text}}</textarea>
                 </label>
                 
                 <!-- Dropdown menu for language selection -->
-                <label for="language">Выберите язык:</label>
+                <label for="language">Choose the language:</label>
                 <select name="language" id="language" class="form__input">
                     <option value="eng">English</option>
                     <option value="ru">Русский</option>
@@ -47,7 +57,7 @@
                 
                 <!-- Submit button -->
                 <div class="form__actions">
-                    <button type="submit" class="main__link" >Сохранить</button>
+                    <button type="submit" class="main__link" >Save</button>
                 </div>
             </div>
         </form>
