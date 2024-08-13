@@ -46,7 +46,7 @@ async def on_ready():
 
 
 #this is for choosing a random one later.
-facts = [
+facts_en = [
 "The Earth's average surface temperature has risen about 1.18°C (2.12°F) since the late 19th century.",
 "The primary cause of global warming is the increase in greenhouse gases like carbon dioxide (CO2), methane (CH4), and nitrous oxide (N2O).",
 "Human activities, particularly the burning of fossil fuels and deforestation, are the largest contributors to greenhouse gas emissions.",
@@ -101,11 +101,35 @@ facts_ru = [
 "Положительные обратные связи, такие как эффект альбедо, усиливают глобальное потепление, снижая способность Земли отражать солнечный свет.",
 "Повышение осведомленности общественности и понимания глобального потепления является важным для стимулирования коллективных действий по решению этой проблемы."]
 
+
+
+#command to change the language of other commands
+language = "eng"
+@bot.slash_command(
+        name="language",
+        description="Change the language of the bot",
+        guild_ids= GUILD_IDS
+)
+async def change_language(ctx, language_choice: discord.Option(str, "Choose language", choices=["eng", "ru"])):
+    global language
+    if language_choice == "eng":
+        language = "eng"
+        await ctx.respond("Changed the language to english!")
+        
+    elif language_choice == "ru":
+        language = "ru"
+        await ctx.respond("Язык был изменен на русский!")
+        
+        
+
+
 @tasks.loop(seconds=60)
 async def send_message_periodically():
     channel = bot.get_channel(1195734655702405202)
-    if channel:
-        await channel.send(f"Here's a random fact about global warming: {random.choice(facts)}")
+    if language == "eng":
+        await channel.send(f"Here's a random fact about global warming: {random.choice(facts_en)}")
+    elif language == "ru":
+        await channel.send(f"Вот случайный факт о глобальном потеплении: {random.choice(facts_ru)}")
 
 
 
@@ -114,42 +138,50 @@ async def send_message_periodically():
     description="Gives a random global warming fact!",
     guild_ids=GUILD_IDS
 )
-async def gwrandomfact(ctx, amount_of_facts: int, language: discord.Option(str, "Choose language", choices=["en", "ru"])):
+async def gwrandomfact(ctx, amount_of_facts: int):
     if amount_of_facts <= 10:
+        print(language)
         if language == "eng":
-            facts = facts
+            facts = facts_en
         elif language == "ru":
             facts = facts_ru
 
         for _ in range(amount_of_facts):
             await ctx.respond(random.choice(facts))
     else:
-        await ctx.respond("You can only have 1-10 facts at a time!")
+        if language == "eng":
+            await ctx.respond("You can only have 1-10 facts at a time!")
+        elif language == "ru":
+            await ctx.respond("За раз можно брать только от 1 до 10 фактов!")
 
 @bot.slash_command(
     name="writeyourfact",
     description="write your own fact/thoughts about global warming and save it to the database!",
     guild_ids=GUILD_IDS
 )
-async def writeyourfact(ctx, author: str, title: str, text: str, language: discord.Option(str, "Choose language", choices=["en", "ru"])):
+async def writeyourfact(ctx, author: str, title: str, text: str):
     with app.app_context():
         
         fact = Facts(title=title, text=text, author=author, language=language)
         db.session.add(fact)
         db.session.commit()
-        
-        await ctx.respond("Your fact has been saved to the database!")
-
+        if language == "eng":
+            await ctx.respond("Your fact has been saved to the database!")
+        elif language == "ru":
+            await ctx.respond("Ваш факт был добавлен в датабазу!")
 
 @bot.slash_command(
     name="randomuserfact",
     description="Shows a random fact from the database of human-written facts about global warming!",
     guild_ids=GUILD_IDS
 )
-async def randomuserfact(ctx, amount: int, language: discord.Option(str, "Choose language", choices=["en", "ru"])):
+async def randomuserfact(ctx, amount: int):
     if amount < 1 or amount > 10:
-        await ctx.respond("You can only request between 1 and 10 facts at a time!")
-        return
+        if language == "eng":
+            await ctx.respond("You can only request between 1 and 10 facts at a time!")
+        elif language == "ru":
+            await ctx.respond("За раз можно брать только от 1 до 10 фактов!")
+
 
     for _ in range(amount):
         fact = random_fact_choice(language)
@@ -158,7 +190,7 @@ async def randomuserfact(ctx, amount: int, language: discord.Option(str, "Choose
             author = fact.author
             title = fact.title
             text = fact.text
-            if language == "en":
+            if language == "eng":
                 await ctx.respond(f"This fact is made by '{author}'\nHis topic is '{title}', and he wants to say the following: {text}")
             elif language == "ru":
                 await ctx.respond(f"Факт был написан '{author}'\n Его тема это '{title}', и его мысли которые он хочет передать это: {text}")
@@ -173,20 +205,22 @@ async def randomuserfact(ctx, amount: int, language: discord.Option(str, "Choose
         description="Provides the list of all commands for this bot!",
         guild_ids=GUILD_IDS
 )
-async def help_command(ctx: discord.ApplicationContext, language: discord.Option(str, "Choose language", choices=["en", "ru"])):
+async def help_command(ctx: discord.ApplicationContext):
     embed = discord.Embed(title="Help", description="List of all commands", color=discord.Color.blue())
     commands_list_en = [
-        {"name": "/gwranfact [amount 1-10], [language(ru/eng)]", "description": "Gives a random global warming fact!"},
+        {"name": "/language [ru/eng]", "description" : "Changes the language of the bot!"},
+        {"name": "/gwranfact [amount 1-10]", "description": "Gives a random global warming fact!"},
         {"name": "/writeyourfact [author] [title] [text]", "description": "write your own fact/thoughts about global warming and save it to the database!"},
         {"name": "/randomuserfact [amount 1-10]", "description": "it shows a random fact from the database of human-written facts about the global warming!"}
     ]
     commands_list_ru = [
-    {"name": "/gwranfact [количество 1-10], [язык(ru/eng)]", "description": "Выдает случайный факт о глобальном потеплении!"},
+    {"name": "/language [ru/eng]", "description" : "Меняет язык бота!"},
+    {"name": "/gwranfact [количество 1-10]", "description": "Выдает случайный факт о глобальном потеплении!"},
     {"name": "/writeyourfact [автор] [заголовок] [текст]", "description": "Напишите свой собственный факт/мысли о глобальном потеплении и сохраните их в базе данных!"},
     {"name": "/randomuserfact [количество 1-10]", "description": "Показывает случайный факт из базы данных о человеческих фактах о глобальном потеплении!"}
     ]
 
-    if language == "en":
+    if language == "eng":
         for command in commands_list_en:
             embed.add_field(name=command["name"], value=command["description"], inline=False)
             embed.set_footer(text="You can also see user-written facts about global warming on our website!")
